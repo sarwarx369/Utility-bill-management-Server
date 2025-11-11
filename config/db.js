@@ -1,22 +1,22 @@
-// config/db.js
-const { MongoClient } = require("mongodb");
+const { MongoClient, ServerApiVersion } = require("mongodb");
+require("dotenv").config();
 
-let dbClient = null;
-let db = null;
+const client = new MongoClient(process.env.MONGO_URI, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
+});
 
-async function connectToDB(uri, dbName = "utilitydb") {
-  if (db) return { db, client: dbClient };
-  dbClient = new MongoClient(uri, { useUnifiedTopology: true });
-  await dbClient.connect();
-  db = dbClient.db(dbName);
-  // ensure indexes if needed
-  await db.collection("users").createIndex({ email: 1 }, { unique: true });
-  return { db, client: dbClient };
+async function connectToDB() {
+  try {
+    await client.connect();
+    await client.db("admin").command({ ping: 1 });
+    console.log("✅ MongoDB Connected Successfully!");
+  } catch (err) {
+    console.error("❌ MongoDB Connection Failed:", err.message);
+  }
 }
 
-function getDB() {
-  if (!db) throw new Error("Database not initialized. Call connectToDB first.");
-  return db;
-}
-
-module.exports = { connectToDB, getDB };
+module.exports = { client, connectToDB };
