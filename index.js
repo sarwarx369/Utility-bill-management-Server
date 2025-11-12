@@ -20,6 +20,7 @@ app.get("/", (req, res) => {
 });
 
 // 🔹 API routes
+
 app.use("/api/auth", authRoutes);
 app.use("/api/bills", billRoutes);
 app.use("/api/users", userRoutes);
