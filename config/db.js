@@ -1,3 +1,4 @@
+// config/db.js
 const { MongoClient, ServerApiVersion } = require("mongodb");
 require("dotenv").config();
 
@@ -10,13 +11,14 @@ const client = new MongoClient(process.env.MONGO_URI, {
 });
 
 async function connectToDB() {
-  try {
-    await client.connect();
-    await client.db("admin").command({ ping: 1 });
-    console.log("✅ MongoDB Connected Successfully!");
-  } catch (err) {
-    console.error("❌ MongoDB Connection Failed:", err.message);
-  }
+  await client.connect();
+  console.log("✅ MongoDB Connected Successfully!");
+  return client;
 }
 
-module.exports = { client, connectToDB };
+// getDB helper
+function getDB(dbName = "utilitydb") {
+  return client.db(dbName);
+}
+
+module.exports = { connectToDB, getDB, client };
